@@ -1,0 +1,31 @@
+.card-graph-3d-root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  aspect-ratio: 220 / 140;
+  font-size: clamp(7px, 1vh, 12px);
+}
+.card-graph-3d-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+
+
+.cg3d-label-large   { font: 700 1.8em/1.1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
+.cg3d-percent-large { font: 600 1.3em/1.1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
+.cg3d-label-small   { font: 700 1.05em/1.1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
+.cg3d-percent-small { font: 600 0.95em/1.1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

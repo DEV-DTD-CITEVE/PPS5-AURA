@@ -1,0 +1,74 @@
+.input-with-units-full-component-others {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.input-with-units-header {
+    display: flex;
+    height: 16px;
+    font-size: clamp(0.6rem, 0.6vw, 1rem);
+    font-weight: bold;
+    color: #000;
+    line-height: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    margin-bottom: 2px;
+}
+
+.input-with-units-titulo-others {
+    display: flex;
+    height: 16px;
+    font-size: clamp(0.6rem, 0.6vw, 1rem);
+    color: #000;
+    line-height: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex-shrink: 1;
+    font-weight: bold;
+    margin: 0;
+}
+
+.input-with-units-component-others {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3px 3px;
+    box-sizing: border-box;
+    background-color: white;
+    border: solid 2px rgba(209, 209, 209, 0.6);
+    border-radius: 5px;
+    padding-right: 0.5em;
+    gap: clamp(5px, 0.8dvw, 20px);
+    height: clamp(28px, 6dvh, 32.2px);
+    position: relative;
+    margin: 0;
+}
+
+.input-with-units-value-others {
+    height: 100%;
+    border: none;
+    outline: none;
+    color: #8a8a8a;
+    line-height: 18px;
+    font-size: clamp(12px, 0.8dvh, 16px);
+    font-weight: normal;
+    width: 75%;
+    font-family: 'Roboto', sans-serif;
+}
+
+.input-with-units-value-others::placeholder {
+    color: #8a8a8a;
+    font-size: clamp(12px, 0.8dvh, 16px);
+    font-weight: normal;
+    line-height: 17px;
+    text-align: left;
+    opacity: 0.9;
+}

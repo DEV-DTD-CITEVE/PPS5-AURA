@@ -1,0 +1,377 @@
+:root,
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.App {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 60px 1fr 40px;
+  background: #f6f7f9;
+  position: relative;
+  font-family: 'Roboto', sans-serif;
+}
+
+.app-body {
+  grid-row: 2;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-header {
+  grid-row: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.app-content {
+  flex: 1;          
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 15px 32px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.content-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.view-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7A2BC2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.action-btn:active {
+  background: #7A2BC225;
+  transform: scale(0.98);
+}
+
+.action-btn.is-active {
+  background: #7A2BC225;
+  color: #fff;
+}
+
+.action-btn:hover {
+  background: #7A2BC225;
+  color: #fff;
+}
+
+.action-btn img {
+  display: flex;
+  align-items: center;
+}
+
+.action-btn.add-cart-btn {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.action-btn.add-cart-btn:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.action-btn.collapse-btn {
+  color: #6b7280;
+}
+
+.action-btn.collapse-btn:hover {
+  background: #7A2BC225;
+  color: white;
+}
+
+.app-footer {
+  grid-row: 3;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex: 1;
+}
+
+.cards-grid > .cart-card-wrapper {
+  width: 360px;
+  max-width: 100%;
+  flex-shrink: 0;
+  min-height: 0;
+  border-radius: 12px;
+  background: #fff;
+  border-bottom: 2px solid #e2e8f0;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.cards-grid > .cart-card-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-bottom-color: #7A2BC2;
+}
+
+.add-cart-card {
+  width: 520px;
+  max-width: 100%;
+  flex-shrink: 0;
+  height: 370px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 2px dashed #10b981;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #10b981;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-cart-card:hover {
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+.toast-viewport {
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  align-items: center;
+  width: auto;
+  max-width: calc(100% - 40px);
+}
+
+.toast-viewport.bottom-center {
+  top: auto;
+  bottom: 60px;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 520px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(8, 15, 26, 0.08);
+  backdrop-filter: blur(6px);
+  font-family: system-ui, sans-serif;
+  animation: toast-in 0.28s ease;
+  transform: none;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.cards-grid:hover {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.cards-grid.scrolling {
+  scrollbar-color: #94a3b8 transparent;
+}
+
+.cards-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cards-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cards-grid::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.cards-grid:hover::-webkit-scrollbar-thumb,
+.cards-grid.scrolling::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.cards-grid:hover::-webkit-scrollbar-thumb:hover,
+.cards-grid.scrolling::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.cards-grid:focus {
+  outline: none;
+}
+
+/* Backdrop */
+.confirm-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+/* Modal */
+.confirm-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 32px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Título */
+.confirm-modal h4 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Texto */
+.confirm-modal p {
+  font-size: 14px;
+  margin: 0 0 20px;
+  color: #3a3a3a;
+}
+
+/* Botões */
+.confirm-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Cancelar */
+.confirm-modal-actions .cancel-button {
+  background-color: transparent;
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-modal-actions .cancel-button:hover {
+  background-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Confirmar */
+.confirm-modal-actions .confirm-button {
+  background-color: transparent;
+  color: #10b981;
+  border: 1.5px solid #10b981;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-modal-actions .confirm-button:hover {
+  background-color: #10b981;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+  transform: translateY(-1px);
+}
+
+.detail-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: min(800px, 90vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.detail-modal .cart-card-content {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
+  padding: 20px;
+}
+
+.detail-modal .card-visual {
+  width: 50%;
+  flex-shrink: 0;
+}
+
+.detail-modal .card-compartment {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

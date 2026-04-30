@@ -1,0 +1,67 @@
+.compartment-list {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.compartment-list:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
+.compartment-list.scrolling {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.compartment-list::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+.compartment-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.compartment-list::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 160ms ease, opacity 160ms ease;
+}
+
+.compartment-list:hover::-webkit-scrollbar-thumb,
+.compartment-list.scrolling::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.compartment-list:hover::-webkit-scrollbar-thumb:hover,
+.compartment-list.scrolling::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.compartment-list:focus {
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
+.compartment-list-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+@media (max-height: 900px) {
+  .compartment-list {
+    overflow-y: auto;
+  }
+}

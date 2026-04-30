@@ -1,0 +1,147 @@
+.compartment-card {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  min-width: 0;
+  padding: 8px 4px;
+}
+
+.compartment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.compartment-name {
+  font-weight: 700;
+  text-transform: capitalize;
+  color: #111827;
+  font-size: clamp(0.7rem, 0.8vw, 1rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compartment-badges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.items-editor {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.items-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #7A2BC225;
+  border: none;
+  border-radius: 4px;
+  color: 000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.items-btn:hover {
+  background: #6821a8;
+  transform: scale(1.05);
+}
+
+.items-btn:active {
+  transform: scale(0.95);
+}
+
+.items-btn.decrement:hover {
+  background: #ef4444;
+}
+
+.items-btn.increment:hover {
+  background: #10b981;
+}
+
+.items-input {
+  width: 50px;
+  padding: 4px 6px;
+  border: 2px solid #7A2BC225;
+  border-radius: 5px;
+  font-size: clamp(0.7rem, 0.6vw, 1rem);
+  font-weight: 500;
+  text-align: center;
+  background: #fff;
+  color: #000;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.items-input:focus {
+  border-color: #7A2BC2;
+  box-shadow: 0 0 0 2px rgba(122, 43, 194, 0.1);
+}
+
+.badge {
+  font-size: clamp(0.7rem, 0.6vw, 1rem);
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #f3f4f6;
+  color: #000;
+  white-space: nowrap;
+}
+
+.badge.items {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: #000;
+  font-weight: 500;
+}
+
+.compartment-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.progress-bar-background {
+  flex: 1;
+  height: 10px;
+  background: #eef2f7;
+  border: 1px solid #dfe3e8;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  min-width: 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 350ms ease;
+  border-radius: 999px 0 0 999px;
+}
+
+.fill-green {
+  background: linear-gradient(90deg, #9beb98, #0eaf36);
+}
+
+.fill-yellow {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.fill-red {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+
+.progress-percentage {
+  min-width: 44px;
+  text-align: right;
+  font-weight: 600;
+  color: #374151;
+  font-size: clamp(0.7rem, 0.8vw, 1rem);
+}
