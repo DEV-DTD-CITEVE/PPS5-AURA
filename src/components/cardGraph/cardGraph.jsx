@@ -105,7 +105,7 @@ const CardGraph = ({ data, images }) => {
         </text>
         {images.A && (
           <g transform="translate(77.5,95)">
-            <image href={images.A} x="-52.5" y="-47" width="105" height="105" />
+           <image href={images.A} x="-95" y="-90" width="190" height="190" />
           </g>
         )}
         <text x="77.5" y="157" textAnchor="middle" className="cg3d-label-small" fill="#333" style={{ fontSize: '14px', fontWeight: '600' }}>
@@ -129,7 +129,7 @@ const CardGraph = ({ data, images }) => {
         )}
         <g transform="translate(202.5,52.5)">
           <text x="-55" y="-20" fill="#333" fontSize="14" fontWeight="700">B</text>
-          {images.B && <image href={images.B} x="-20" y="-15" width="40" height="30" />}
+          {images.B && <image href={images.B} x="-40" y="-32" width="75" height="65" />}
           <text textAnchor="middle" y="30" fill="#333" fontSize="12" fontWeight="600">{bPct}%</text>
         </g>
 
@@ -150,7 +150,7 @@ const CardGraph = ({ data, images }) => {
         )}
         <g transform="translate(202.5,127.5)">
           <text x="-55" y="-20" fill="#333" fontSize="14" fontWeight="700">C</text>
-          {images.C && <image href={images.C} x="-20" y="-15" width="40" height="30" />}
+          {images.C && <image href={images.C} x="-40" y="-32" width="75" height="65" />}
           <text textAnchor="middle" y="30" fill="#333" fontSize="12" fontWeight="600">{cPct}%</text>
         </g>
       </svg>

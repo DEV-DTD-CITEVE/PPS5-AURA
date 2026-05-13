@@ -3,6 +3,37 @@ import "./cartCard.css";
 import Compartment from "../compartmentDetails.jsx/compartment.jsx";
 import CardGraph from "../cardGraph/cardGraph.jsx";
 
+const STATUS_MESSAGES = {
+  AWAITING_PICKUP: {
+    title: "A aguardar recolha",
+    description: "O carrinho está pronto para ser recolhido.",
+    icon: "🛒"
+  },
+  IN_TRANSIT: {
+    title: "Em trânsito",
+    description: "O carrinho está a caminho do destino.",
+    icon: "🛒💨"
+  },
+  UNLOADING: {
+    title: "A descarregar",
+    description: "O carrinho está a ser descarregado.",
+    icon: "📦"
+  },
+  BLOCKED: {
+    title: "Carrinho bloqueado",
+    description: "O carrinho não pode ser utilizado neste momento.",
+    icon: "⛔"
+  },
+  UNAVAILABLE: {
+    title: "Indisponível",
+    description: "O carrinho não está disponível.",
+    icon: "🚫"
+  }
+};
+
+
+
+
 const CartCard = ({
   title,
   itemsCount,
@@ -13,7 +44,8 @@ const CartCard = ({
   initialEditing = false,
   isCollapsed,
   onToggleCollapse,
-  pickupModal = false
+  pickupModal = false,
+  status
 }) => {
   const comps = Array.isArray(compartments) ? compartments : [];
   const [isEditing, setIsEditing] = useState(initialEditing);
@@ -21,8 +53,11 @@ const CartCard = ({
     initialEditing ? JSON.parse(JSON.stringify(compartments || [])) : []
   );
 
-  // Modal de carrinho cheio (local ao card)
+
+
+  
   const [showFullModal, setShowFullModal] = useState(false);
+  const [fullModalConfirmed, setFullModalConfirmed] = useState(false);
 
   // Percentagens
   const findPctByKeyFromList = (list, key) => {
@@ -48,7 +83,7 @@ const CartCard = ({
     C: findPctByKeyFromList(activeComps, "C")
   };
 
-  // Total items
+  
   const totalItems = comps.reduce((sum, c) => sum + (c.piece_count || 0), 0);
   const itemsCountFinal =
     typeof itemsCount === "number" ? itemsCount : totalItems;
@@ -62,14 +97,14 @@ const CartCard = ({
         (c.piece_count / c.max_pieces) * 100 >= 100
     );
 
-  // Abre modal automaticamente (mas NÃO dentro da modal geral)
+  
   useEffect(() => {
     if (isFull && !pickupModal) {
       setShowFullModal(true);
     }
   }, [isFull, pickupModal]);
 
-  // Status dot
+  
   const getStatusClass = () => {
     if (isFull) return "status-error";
     if (itemsCountFinal === 0) return "status-inactive";
@@ -123,9 +158,9 @@ const CartCard = ({
     <article
       className={`cart-card ${isCollapsed ? "collapsed" : ""}`}
       onClick={() =>
-        !isEditing && onToggleCollapse && onToggleCollapse(!isCollapsed)
+        !isEditing && !showFullModal && onToggleCollapse && onToggleCollapse(!isCollapsed)
       }
-      style={{ position: "relative" }} 
+      style={{ position: "relative" }}
     >
       <header className="cart-card-header">
         <div className="cart-card-header-left">
@@ -241,29 +276,39 @@ const CartCard = ({
 
       {/* MODAL LOCAL (apenas dentro do card) */}
       {showFullModal && !pickupModal && (
-        <div
-          className="cart-full-overlay local"
-          onClick={() => setShowFullModal(false)}
-        >
-          <div
-            className="cart-full-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3>O carrinho está cheio</h3>
-            <p>Deseja que seja retirado?</p>
+        <div className="cart-full-overlay under-header">
+          <div className="cart-full-modal" onClick={(e) => e.stopPropagation()}>
+            {fullModalConfirmed ? (
+              <h3>
+                {STATUS_MESSAGES[status]
+                  ? `${STATUS_MESSAGES[status].icon} ${STATUS_MESSAGES[status].title}`
+                  : "⏳A processar... Aguarde um momento enquanto carregamos o estado."}
+              </h3>
 
-            <div className="modal-actions">
-              <button
-                className="secondary"
-                onClick={() => setShowFullModal(false)}
-              >
-                Cancelar
-              </button>
 
-              <button className="primary" onClick={handlePickupClick}>
-                Confirmar
-              </button>
-            </div>
+            ) : (
+              <>
+                <h3>O carrinho está cheio</h3>
+                <p>Deseja que seja retirado?</p>
+                <div className="modal-actions">
+                  <button
+                    className="secondary"
+                    onClick={() => setShowFullModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    className="primary"
+                    onClick={() => {
+                      setFullModalConfirmed(true);
+
+                    }}
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
