@@ -5,10 +5,11 @@ const AddCartModal = ({ isOpen, onClose, onAddCart }) => {
   const [errorModal, setErrorModal] = useState("");
   const [cartTitle, setCartTitle] = useState("");
   const [compartments, setCompartments] = useState([
-    { name: "compartment_A", variant: "", limit: 20 },
-    { name: "compartment_B", variant: "", limit: 20 },
-    { name: "compartment_C", variant: "", limit: 20 },
-  ]);
+  { name: "A", variant: "", limit: 20 },
+  { name: "B", variant: "", limit: 20 },
+  { name: "C", variant: "", limit: 20 },
+]);
+
 
  const handleAddCart = () => {
   // validar nome do carrinho
@@ -49,12 +50,11 @@ const AddCartModal = ({ isOpen, onClose, onAddCart }) => {
 
   // reset
   setCartTitle("");
-  setCompartments([
-    { name: "compartment_A", variant: "", limit: 20 },
-    { name: "compartment_B", variant: "", limit: 20 },
-    { name: "compartment_C", variant: "", limit: 20 },
-  ]);
-
+setCompartments([
+  { name: "A", variant: "", limit: 20 },
+  { name: "B", variant: "", limit: 20 },
+  { name: "C", variant: "", limit: 20 },
+]);
   onClose();
 };
 
