@@ -7,9 +7,121 @@ import AddCartModal from "./components/others/addCartModal";
 import Footer from "./components/others/footer";
 import Sidebar from "./components/others/sidebar";
 import axios from "axios";
+import useRealtimeEvents from "./hooks/useRealtimeEvents";
+import { getApiBaseUrl } from "./config/api";
 
-const API_URL = "http://192.168.55.49:8055";
-//const API_URL = "http://localhost:8055";//
+const API_BASE_URL = getApiBaseUrl();
+
+const mapCompartmentsFromObject = (compartmentsObject = {}) =>
+    Object.entries(compartmentsObject).map(([key, c]) => ({
+        name: key,
+        piece_type: c?.piece_type,
+        piece_count: c?.piece_count,
+        max_pieces: c?.max_pieces,
+        piece_image: c?.piece_image,
+    }));
+
+const mapCartFromApi = (cart) => {
+    const compartments = mapCompartmentsFromObject(cart.compartments);
+    const itemsCount = compartments.reduce((sum, c) => sum + (c.piece_count || 0), 0);
+
+    return { id: cart.id, title: cart.id, compartments, itemsCount };
+};
+
+const normalizeRealtimeCart = (payload, existingCarts) => {
+    const candidate = payload?.cart ?? payload?.data ?? payload;
+
+    if (!candidate || typeof candidate !== "object") {
+        return null;
+    }
+
+    const id = candidate.id ?? candidate.cartId ?? candidate.cart_id;
+    if (typeof id !== "string" || id.trim() === "") {
+        return null;
+    }
+
+    let rawCompartments = null;
+    if (Array.isArray(candidate.compartments)) {
+        rawCompartments = candidate.compartments;
+    } else if (
+        candidate.compartments &&
+        typeof candidate.compartments === "object" &&
+        !Array.isArray(candidate.compartments)
+    ) {
+        rawCompartments = mapCompartmentsFromObject(candidate.compartments);
+    }
+
+    if (!rawCompartments || rawCompartments.length === 0) {
+        return null;
+    }
+
+    const existingCart = existingCarts.find((cart) => cart.id === id);
+    const imageByName = new Map(
+        (existingCart?.compartments || []).map((compartment) => [
+            compartment.name,
+            compartment.piece_image,
+        ]),
+    );
+
+    const compartments = rawCompartments
+        .map((compartment) => {
+            if (!compartment || typeof compartment !== "object") {
+                return null;
+            }
+
+            const name = compartment.name;
+            const pieceCount = compartment.piece_count;
+            const maxPieces = compartment.max_pieces;
+
+            if (
+                typeof name !== "string" ||
+                typeof pieceCount !== "number" ||
+                typeof maxPieces !== "number"
+            ) {
+                return null;
+            }
+
+            return {
+                name,
+                piece_type: compartment.piece_type,
+                piece_count: pieceCount,
+                max_pieces: maxPieces,
+                piece_image: compartment.piece_image ?? imageByName.get(name),
+            };
+        })
+        .filter(Boolean);
+
+    if (compartments.length !== rawCompartments.length) {
+        return null;
+    }
+
+    return {
+        id,
+        title: id,
+        compartments,
+        itemsCount: compartments.reduce((sum, c) => sum + c.piece_count, 0),
+    };
+};
+
+const mergeCartStateFromRealtime = (currentCarts, payload) => {
+    const normalizedCart = normalizeRealtimeCart(payload, currentCarts);
+
+    if (!normalizedCart) {
+        return { didMerge: false, carts: currentCarts };
+    }
+
+    const cartExists = currentCarts.some((cart) => cart.id === normalizedCart.id);
+    if (!cartExists) {
+        return { didMerge: false, carts: currentCarts };
+    }
+
+    return {
+        didMerge: true,
+        carts: currentCarts.map((cart) =>
+            cart.id === normalizedCart.id ? { ...cart, ...normalizedCart } : cart,
+        ),
+    };
+};
 
 const App = () => {
     const [carts, setCarts] = useState([]);
@@ -31,7 +143,9 @@ const App = () => {
         startEditing: false,
     });
     const [currentPage, setCurrentPage] = useState("Gestão de Carrinhos");
+    const [streamReconnectToastShown, setStreamReconnectToastShown] = useState(false);
     const contentRef = useRef(null);
+    const cartsRef = useRef([]);
 
     // Função para exibir toast
     const showToast = useCallback((variant, title, message, position = "top") => {
@@ -46,24 +160,9 @@ const App = () => {
     // Fetch de carts
     const fetchCarts = useCallback(async () => {
         try {
-            const response = await axios.get(`${API_URL}/carts`);
+            const response = await axios.get(`${API_BASE_URL}/carts`);
             const formatted = response.data
-                .map((cart) => {
-                    const compartments = Object.entries(cart.compartments).map(
-                        ([key, c]) => ({
-                            name: key,
-                            piece_type: c.piece_type,
-                            piece_count: c.piece_count,
-                            max_pieces: c.max_pieces,
-                            piece_image: c.piece_image,
-                        }),
-                    );
-                    const itemsCount = compartments.reduce(
-                        (sum, c) => sum + (c.piece_count || 0),
-                        0,
-                    );
-                    return { id: cart.id, title: cart.id, compartments, itemsCount };
-                })
+                .map((cart) => mapCartFromApi(cart))
                 .sort((a, b) => a.id.localeCompare(b.id));
 
             setCarts((prev) => {
@@ -77,10 +176,76 @@ const App = () => {
     }, [showToast]);
 
     useEffect(() => {
+        cartsRef.current = carts;
+    }, [carts]);
+
+    useEffect(() => {
         fetchCarts();
-        const interval = setInterval(fetchCarts, 2000);
-        return () => clearInterval(interval);
     }, [fetchCarts]);
+
+    const handleRealtimeCartStateUpdated = useCallback(
+        (payload) => {
+            const mergeResult = mergeCartStateFromRealtime(cartsRef.current, payload);
+
+            if (!mergeResult.didMerge) {
+                fetchCarts();
+                return;
+            }
+
+            cartsRef.current = mergeResult.carts;
+            setCarts(mergeResult.carts);
+        },
+        [fetchCarts],
+    );
+
+    const handleRealtimeCartDeleted = useCallback(
+        (payload) => {
+            const cartId = payload?.id;
+
+            if (typeof cartId !== "string" || !cartId.trim()) {
+                fetchCarts();
+                return;
+            }
+
+            const nextCarts = cartsRef.current.filter((cart) => cart.id !== cartId);
+
+            if (nextCarts.length === cartsRef.current.length) {
+                fetchCarts();
+                return;
+            }
+
+            cartsRef.current = nextCarts;
+            setCarts(nextCarts);
+        },
+        [fetchCarts],
+    );
+
+    const handleReconnectSnapshotNeeded = useCallback(() => {
+        fetchCarts();
+
+        if (!streamReconnectToastShown) {
+            showToast(
+                "neutralBlue",
+                "Realtime",
+                "Ligação restabelecida. Estado sincronizado.",
+                "bottom",
+            );
+            setStreamReconnectToastShown(true);
+        }
+    }, [fetchCarts, showToast, streamReconnectToastShown]);
+
+    const { status: streamStatus } = useRealtimeEvents({
+        apiBaseUrl: API_BASE_URL,
+        onCartStateUpdated: handleRealtimeCartStateUpdated,
+        onCartDeleted: handleRealtimeCartDeleted,
+        onReconnectSnapshotNeeded: handleReconnectSnapshotNeeded,
+    });
+
+    useEffect(() => {
+        if (streamStatus === "connected") {
+            setStreamReconnectToastShown(false);
+        }
+    }, [streamStatus]);
 
     // Scroll ao topo
     const handleScrollToTop = useCallback(() => {
@@ -121,7 +286,7 @@ const App = () => {
             try {
                 for (const compartment of updatedCompartments) {
                     await axios.patch(
-                        `${API_URL}/carts/${cartId}/compartments/${compartment.name}`,
+                        `${API_BASE_URL}/carts/${cartId}/compartments/${compartment.name}`,
                         {
                             piece_type: compartment.piece_type,
                             piece_count: compartment.piece_count,
@@ -162,7 +327,7 @@ const App = () => {
     const handleConfirmAddCart = useCallback(
         async (newCart) => {
             try {
-                await axios.post(`${API_URL}/carts`, newCart);
+                await axios.post(`${API_BASE_URL}/carts`, newCart);
                 showToast(
                     "success",
                     "Carrinho adicionado",
@@ -186,7 +351,7 @@ const App = () => {
     const handleConfirmDeleteCart = useCallback(async () => {
         const { cartId, cartTitle } = deleteModal;
         try {
-            await axios.delete(`${API_URL}/carts/${cartId}`);
+            await axios.delete(`${API_BASE_URL}/carts/${cartId}`);
             setCarts((prev) => prev.filter((cart) => cart.id !== cartId));
             showToast("success", "Carrinho eliminado", `${cartTitle} foi removido.`);
         } catch (error) {
@@ -223,6 +388,16 @@ const App = () => {
                     {currentPage === "Gestão de Carrinhos" && (
                         <>
                             <div className="content-actions">
+                                <div
+                                    className={`stream-status-indicator is-${streamStatus}`}
+                                    aria-live="polite"
+                                    data-testid="stream-status-indicator"
+                                >
+                                    <span className="stream-status-dot" />
+                                    <span className="stream-status-label">
+                                        Stream: {streamStatus}
+                                    </span>
+                                </div>
                                 <button
                                     className="action-btn add-cart-btn"
                                     onClick={handleAddCart}

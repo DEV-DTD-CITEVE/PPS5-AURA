@@ -51,6 +51,54 @@ body,
   flex-shrink: 0;
 }
 
+.stream-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 11px;
+  color: #6b7280;
+  background: #fff;
+}
+
+.stream-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+
+.stream-status-indicator.is-connected {
+  border-color: #86efac;
+  color: #166534;
+}
+
+.stream-status-indicator.is-connected .stream-status-dot {
+  background: #22c55e;
+}
+
+.stream-status-indicator.is-connecting,
+.stream-status-indicator.is-reconnecting {
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.stream-status-indicator.is-connecting .stream-status-dot,
+.stream-status-indicator.is-reconnecting .stream-status-dot {
+  background: #f59e0b;
+}
+
+.stream-status-indicator.is-closed {
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.stream-status-indicator.is-closed .stream-status-dot {
+  background: #ef4444;
+}
+
 .view-buttons {
   display: flex;
   gap: 8px;
