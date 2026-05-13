@@ -28,14 +28,21 @@ const mapCartFromApi = (cart) => {
     return { id: cart.id, title: cart.id, compartments, itemsCount };
 };
 
+const extractRealtimeCandidate = (payload) => payload?.payload ?? payload?.cart ?? payload?.data ?? payload;
+
 const normalizeRealtimeCart = (payload, existingCarts) => {
-    const candidate = payload?.cart ?? payload?.data ?? payload;
+    const candidate = extractRealtimeCandidate(payload);
 
     if (!candidate || typeof candidate !== "object") {
         return null;
     }
 
-    const id = candidate.id ?? candidate.cartId ?? candidate.cart_id;
+    const id =
+        candidate.id ??
+        candidate.cartId ??
+        candidate.cart_id ??
+        payload?.aggregate_id ??
+        payload?.cart_id;
     if (typeof id !== "string" || id.trim() === "") {
         return null;
     }
@@ -111,15 +118,14 @@ const mergeCartStateFromRealtime = (currentCarts, payload) => {
     }
 
     const cartExists = currentCarts.some((cart) => cart.id === normalizedCart.id);
-    if (!cartExists) {
-        return { didMerge: false, carts: currentCarts };
-    }
 
     return {
         didMerge: true,
-        carts: currentCarts.map((cart) =>
-            cart.id === normalizedCart.id ? { ...cart, ...normalizedCart } : cart,
-        ),
+        carts: cartExists
+            ? currentCarts.map((cart) =>
+                  cart.id === normalizedCart.id ? { ...cart, ...normalizedCart } : cart,
+              )
+            : [...currentCarts, normalizedCart].sort((a, b) => a.id.localeCompare(b.id)),
     };
 };
 
@@ -220,10 +226,10 @@ const App = () => {
         [fetchCarts],
     );
 
-    const handleReconnectSnapshotNeeded = useCallback(() => {
+    const handleReconnectSnapshotNeeded = useCallback(({ isReconnect } = {}) => {
         fetchCarts();
 
-        if (!streamReconnectToastShown) {
+        if (isReconnect && !streamReconnectToastShown) {
             showToast(
                 "neutralBlue",
                 "Realtime",

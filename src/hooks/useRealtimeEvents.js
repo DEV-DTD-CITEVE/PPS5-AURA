@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from "react";
 
 const STREAM_PATH = "/api/realtime/events";
 const RECONNECT_DELAY_MS = 3000;
+const CART_STATE_EVENT_NAMES = [
+    "cart.state.updated",
+    "cart_created",
+    "cart_replaced",
+    "cart_patched",
+    "cart_status_updated",
+    "compartment_patched",
+];
+const CART_DELETED_EVENT_NAMES = ["cart_deleted"];
 
 const buildStreamUrl = (apiBaseUrl) => {
     const baseUrl = typeof apiBaseUrl === "string" ? apiBaseUrl.trim() : "";
@@ -85,10 +94,10 @@ const useRealtimeEvents = ({
                 }
 
                 setStatus("connected");
-                if (reconnectingRef.current) {
-                    reconnectingRef.current = false;
-                    onReconnectSnapshotNeeded?.();
-                }
+                onReconnectSnapshotNeeded?.({
+                    isReconnect: reconnectingRef.current,
+                });
+                reconnectingRef.current = false;
             };
 
             source.onerror = () => {
@@ -96,18 +105,22 @@ const useRealtimeEvents = ({
                 scheduleReconnect();
             };
 
-            source.addEventListener("cart_state_updated", (event) => {
-                const payload = parseEventData(event);
-                if (payload) {
-                    onCartStateUpdated?.(payload);
-                }
+            CART_STATE_EVENT_NAMES.forEach((eventName) => {
+                source.addEventListener(eventName, (event) => {
+                    const payload = parseEventData(event);
+                    if (payload) {
+                        onCartStateUpdated?.(payload);
+                    }
+                });
             });
 
-            source.addEventListener("cart_deleted", (event) => {
-                const payload = parseEventData(event);
-                if (payload) {
-                    onCartDeleted?.(payload);
-                }
+            CART_DELETED_EVENT_NAMES.forEach((eventName) => {
+                source.addEventListener(eventName, (event) => {
+                    const payload = parseEventData(event);
+                    if (payload) {
+                        onCartDeleted?.(payload);
+                    }
+                });
             });
         };
 
