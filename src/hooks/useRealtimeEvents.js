@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const STREAM_PATH = "/events";
+const STREAM_PATH = "/api/realtime/events";
 const RECONNECT_DELAY_MS = 3000;
 
 const buildStreamUrl = (apiBaseUrl) => {
