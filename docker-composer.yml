@@ -1,0 +1,23 @@
+services:
+  aura:
+    image: node:20-alpine
+    container_name: pps5-aura
+    working_dir: /app
+    volumes:
+      - .:/app
+      - aura_node_modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=3000
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - BROWSER=none
+    command: sh -c "npm ci && npm start"
+    stdin_open: true
+    tty: true
+
+volumes:
+  aura_node_modules:
