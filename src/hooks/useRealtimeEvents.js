@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const STREAM_PATH = "/api/realtime/events";
 const RECONNECT_DELAY_MS = 3000;
+const MAX_RECONNECT_ATTEMPTS = 2;
 const CART_STATE_EVENT_NAMES = [
     "cart.state.updated",
     "cart_created",
@@ -11,6 +12,10 @@ const CART_STATE_EVENT_NAMES = [
     "compartment_patched",
 ];
 const CART_DELETED_EVENT_NAMES = ["cart_deleted"];
+
+const getDefaultRealtimeBaseUrl = () =>
+    process.env.REACT_APP_REALTIME_BASE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "http://192.168.55.49:3847");
 
 const buildStreamUrl = (apiBaseUrl) => {
     const baseUrl = typeof apiBaseUrl === "string" ? apiBaseUrl.trim() : "";
@@ -36,6 +41,7 @@ const parseEventData = (event) => {
 
 const useRealtimeEvents = ({
     apiBaseUrl,
+    realtimeBaseUrl = getDefaultRealtimeBaseUrl(),
     onCartStateUpdated,
     onCartDeleted,
     onReconnectSnapshotNeeded,
@@ -44,6 +50,12 @@ const useRealtimeEvents = ({
     const reconnectTimerRef = useRef(null);
     const eventSourceRef = useRef(null);
     const reconnectingRef = useRef(false);
+    const reconnectAttemptsRef = useRef(0);
+
+    const streamUrl = useMemo(
+        () => buildStreamUrl(apiBaseUrl || realtimeBaseUrl),
+        [apiBaseUrl, realtimeBaseUrl],
+    );
 
     useEffect(() => {
         let isActive = true;
@@ -67,8 +79,14 @@ const useRealtimeEvents = ({
                 return;
             }
 
+            if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+                setStatus("failed");
+                return;
+            }
+
             reconnectingRef.current = true;
             setStatus("disconnected");
+            reconnectAttemptsRef.current += 1;
             reconnectTimerRef.current = setTimeout(() => {
                 reconnectTimerRef.current = null;
                 connect();
@@ -85,7 +103,7 @@ const useRealtimeEvents = ({
             closeStream();
             setStatus("connecting");
 
-            const source = new EventSource(buildStreamUrl(apiBaseUrl));
+            const source = new EventSource(streamUrl);
             eventSourceRef.current = source;
 
             source.onopen = () => {
@@ -94,6 +112,7 @@ const useRealtimeEvents = ({
                 }
 
                 setStatus("connected");
+                reconnectAttemptsRef.current = 0;
                 onReconnectSnapshotNeeded?.({
                     isReconnect: reconnectingRef.current,
                 });
@@ -131,7 +150,7 @@ const useRealtimeEvents = ({
             clearReconnectTimer();
             closeStream();
         };
-    }, [apiBaseUrl, onCartDeleted, onCartStateUpdated, onReconnectSnapshotNeeded]);
+    }, [streamUrl, onCartDeleted, onCartStateUpdated, onReconnectSnapshotNeeded]);
 
     return { status };
 };
