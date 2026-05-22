@@ -12,7 +12,7 @@ import { getApiBaseUrl } from "./config/api";
 
 const API_BASE_URL = getApiBaseUrl();
 
-const mapCompartmentsFromObject = (compartmentsObject = {}) =>
+export const mapCompartmentsFromObject = (compartmentsObject = {}) =>
     Object.entries(compartmentsObject).map(([key, c]) => ({
         name: key,
         piece_type: c?.piece_type,
@@ -30,7 +30,7 @@ const mapCartFromApi = (cart) => {
 
 const extractRealtimeCandidate = (payload) => payload?.payload ?? payload?.cart ?? payload?.data ?? payload;
 
-const normalizeRealtimeCart = (payload, existingCarts) => {
+export const normalizeRealtimeCart = (payload, existingCarts) => {
     const candidate = extractRealtimeCandidate(payload);
 
     if (!candidate || typeof candidate !== "object") {
@@ -110,7 +110,7 @@ const normalizeRealtimeCart = (payload, existingCarts) => {
     };
 };
 
-const mergeCartStateFromRealtime = (currentCarts, payload) => {
+export const mergeCartStateFromRealtime = (currentCarts, payload) => {
     const normalizedCart = normalizeRealtimeCart(payload, currentCarts);
 
     if (!normalizedCart) {
