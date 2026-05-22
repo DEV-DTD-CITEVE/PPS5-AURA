@@ -6,12 +6,15 @@ services:
     volumes:
       - .:/app
       - aura_node_modules:/app/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "3847:3000"
+      - "3847:3847"
     environment:
       - NODE_ENV=development
       - HOST=0.0.0.0
-      - PORT=3000
+      - PORT=3847
+      - API_PROXY_TARGET=http://host.docker.internal:8055
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - BROWSER=none

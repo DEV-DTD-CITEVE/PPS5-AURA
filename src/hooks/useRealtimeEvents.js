@@ -14,8 +14,9 @@ const CART_STATE_EVENT_NAMES = [
 const CART_DELETED_EVENT_NAMES = ["cart_deleted"];
 
 const getDefaultRealtimeBaseUrl = () =>
-    process.env.REACT_APP_REALTIME_BASE_URL ||
-    "http://localhost:8055";
+    Object.prototype.hasOwnProperty.call(process.env, "REACT_APP_REALTIME_BASE_URL")
+        ? (process.env.REACT_APP_REALTIME_BASE_URL || "").trim().replace(/\/$/, "")
+        : "http://localhost:8055";
 
 const buildStreamUrl = (apiBaseUrl) => {
     const baseUrl = typeof apiBaseUrl === "string" ? apiBaseUrl.trim() : "";
