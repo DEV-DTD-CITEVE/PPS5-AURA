@@ -14,6 +14,8 @@ services:
       - NODE_ENV=development
       - HOST=0.0.0.0
       - PORT=3847
+      - REACT_APP_API_BASE_URL=http://192.168.55.49:8055
+      - REACT_APP_REALTIME_BASE_URL=http://192.168.55.49:8055
       - API_PROXY_TARGET=http://host.docker.internal:8055
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
