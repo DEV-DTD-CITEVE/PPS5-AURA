@@ -1,8 +1,5 @@
 const DEFAULT_API_BASE_URL = "http://localhost:8055";
 
-const hasOwnEnvValue = (name) =>
-    Object.prototype.hasOwnProperty.call(process.env, name);
-
 const normalizeBaseUrl = (value) => {
     if (typeof value !== "string") {
         return DEFAULT_API_BASE_URL;
@@ -14,6 +11,11 @@ const normalizeBaseUrl = (value) => {
     }
 
     return trimmed.replace(/\/$/, "");
+};
+
+const getNonEmptyEnvBaseUrl = (name) => {
+    const value = normalizeBaseUrl(process.env[name]);
+    return value || null;
 };
 
 const isLocalFrontendHost = (hostname) =>
@@ -30,13 +32,13 @@ export const getBrowserHostApiBaseUrl = () => {
 };
 
 export const getApiBaseUrl = () =>
-    hasOwnEnvValue("REACT_APP_API_BASE_URL")
-        ? normalizeBaseUrl(process.env.REACT_APP_API_BASE_URL)
-        : getBrowserHostApiBaseUrl() ?? DEFAULT_API_BASE_URL;
+    getNonEmptyEnvBaseUrl("REACT_APP_API_BASE_URL") ??
+    getBrowserHostApiBaseUrl() ??
+    DEFAULT_API_BASE_URL;
 
 export const getRealtimeBaseUrl = () =>
-    hasOwnEnvValue("REACT_APP_REALTIME_BASE_URL")
-        ? normalizeBaseUrl(process.env.REACT_APP_REALTIME_BASE_URL)
-        : getBrowserHostApiBaseUrl() ?? DEFAULT_API_BASE_URL;
+    getNonEmptyEnvBaseUrl("REACT_APP_REALTIME_BASE_URL") ??
+    getBrowserHostApiBaseUrl() ??
+    DEFAULT_API_BASE_URL;
 
 export default getApiBaseUrl;
