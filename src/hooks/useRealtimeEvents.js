@@ -15,7 +15,7 @@ const CART_DELETED_EVENT_NAMES = ["cart_deleted"];
 
 const getDefaultRealtimeBaseUrl = () =>
     process.env.REACT_APP_REALTIME_BASE_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "http://192.168.55.49:3847");
+    "http://localhost:8055";
 
 const buildStreamUrl = (apiBaseUrl) => {
     const baseUrl = typeof apiBaseUrl === "string" ? apiBaseUrl.trim() : "";
