@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getRealtimeBaseUrl } from "../config/api";
 
 const STREAM_PATH = "/api/realtime/events";
 const RECONNECT_DELAY_MS = 3000;
@@ -13,10 +14,7 @@ const CART_STATE_EVENT_NAMES = [
 ];
 const CART_DELETED_EVENT_NAMES = ["cart_deleted"];
 
-const getDefaultRealtimeBaseUrl = () =>
-    Object.prototype.hasOwnProperty.call(process.env, "REACT_APP_REALTIME_BASE_URL")
-        ? (process.env.REACT_APP_REALTIME_BASE_URL || "").trim().replace(/\/$/, "")
-        : "http://localhost:8055";
+const getDefaultRealtimeBaseUrl = () => getRealtimeBaseUrl();
 
 const buildStreamUrl = (apiBaseUrl) => {
     const baseUrl = typeof apiBaseUrl === "string" ? apiBaseUrl.trim() : "";
