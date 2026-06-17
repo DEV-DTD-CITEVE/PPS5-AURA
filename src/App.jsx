@@ -129,6 +129,21 @@ export const mergeCartStateFromRealtime = (currentCarts, payload) => {
     };
 };
 
+export async function sendToCart(cartId) {
+  const res = await fetch(`/api/carts/${cartId}/commands/send-to-cart`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error?.message || "Erro ao enviar AMR");
+  }
+
+  return res.json();
+}
+
+
 const App = () => {
     const [carts, setCarts] = useState([]);
     const [toasts, setToasts] = useState([]);
@@ -369,13 +384,24 @@ const App = () => {
     }, [deleteModal, showToast]);
 
     // Recolher carrinho
-    const handleRequestPickup = useCallback((cartId, cartTitle) => {
-        setPickupModal({ isOpen: true, cartId, cartTitle });
-    }, []);
-    const handleConfirmPickup = useCallback(() => {
-        handleUnload(pickupModal.cartTitle);
+const handleRequestPickup = useCallback((cartId, cartTitle) => {
+    setPickupModal({ isOpen: true, cartId, cartTitle });
+}, []);
+
+
+
+const handleConfirmPickup = useCallback(async () => {
+    try {
+        await sendToCart(pickupModal.cartId); 
+        handleUnload(pickupModal.cartTitle);  
         setPickupModal({ isOpen: false, cartId: null, cartTitle: "" });
-    }, [handleUnload, pickupModal.cartTitle]);
+    } catch (err) {
+        console.error("Erro ao enviar AMR:", err.message);
+        showToast("error", "Erro", "Não foi possível enviar o AMR.");
+    }
+}, [pickupModal.cartId, pickupModal.cartTitle, handleUnload, showToast]);
+
+
 
     // Fechar modal de detalhe
     const handleCloseDetail = useCallback(() => {
