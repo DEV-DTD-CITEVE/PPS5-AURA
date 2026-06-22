@@ -58,6 +58,27 @@ docker compose down -v
 docker compose up
 ```
 
+## Produção com NGINX
+
+O build de produção usa same-origin por padrão. Se `REACT_APP_API_BASE_URL` e
+`REACT_APP_REALTIME_BASE_URL` estiverem vazias, o frontend chama `/carts`,
+`/api/` e `/api/realtime/events` no mesmo host da página.
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Para override explícito no build:
+
+```bash
+REACT_APP_API_BASE_URL=https://api.exemplo.com \
+REACT_APP_REALTIME_BASE_URL=https://api.exemplo.com \
+docker compose -f docker-compose.prod.yml up --build
+```
+
+NGINX serve o build estático e faz proxy de `/carts`, `/api/` e
+`/api/realtime/events` para o backend em `:8055`.
+
 ## Referências
 
 - [PPS5-AURA](../PPS5-AURA/package.json) — React + react-scripts, porta 3847

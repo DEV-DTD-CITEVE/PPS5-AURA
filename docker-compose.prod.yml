@@ -1,0 +1,14 @@
+services:
+  aura:
+    container_name: pps5-aura-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-}
+        REACT_APP_REALTIME_BASE_URL: ${REACT_APP_REALTIME_BASE_URL:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:80"
+    restart: unless-stopped
