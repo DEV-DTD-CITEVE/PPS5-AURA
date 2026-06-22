@@ -1,8 +1,8 @@
-const DEFAULT_API_BASE_URL = "http://localhost:8055";
+const DEFAULT_DEV_API_BASE_URL = "http://localhost:8055";
 
 const normalizeBaseUrl = (value) => {
     if (typeof value !== "string") {
-        return DEFAULT_API_BASE_URL;
+        return "";
     }
 
     const trimmed = value.trim();
@@ -21,24 +21,26 @@ const getNonEmptyEnvBaseUrl = (name) => {
 const isLocalFrontendHost = (hostname) =>
     hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
 
+const isProductionBuild = process.env.NODE_ENV === "production";
+
 export const getBrowserHostApiBaseUrl = () => {
-    if (typeof window === "undefined" || !window.location?.hostname) {
-        return null;
+    if (isProductionBuild || typeof window === "undefined" || !window.location?.hostname) {
+        return "";
     }
 
     return isLocalFrontendHost(window.location.hostname)
-        ? "http://localhost:8055"
+        ? DEFAULT_DEV_API_BASE_URL
         : `http://${window.location.hostname}:8055`;
 };
 
 export const getApiBaseUrl = () =>
     getNonEmptyEnvBaseUrl("REACT_APP_API_BASE_URL") ??
     getBrowserHostApiBaseUrl() ??
-    DEFAULT_API_BASE_URL;
+    "";
 
 export const getRealtimeBaseUrl = () =>
     getNonEmptyEnvBaseUrl("REACT_APP_REALTIME_BASE_URL") ??
     getBrowserHostApiBaseUrl() ??
-    DEFAULT_API_BASE_URL;
+    "";
 
 export default getApiBaseUrl;

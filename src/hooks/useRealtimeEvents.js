@@ -52,7 +52,7 @@ const useRealtimeEvents = ({
     const reconnectAttemptsRef = useRef(0);
 
     const streamUrl = useMemo(
-        () => buildStreamUrl(apiBaseUrl || realtimeBaseUrl),
+        () => buildStreamUrl(realtimeBaseUrl || apiBaseUrl),
         [apiBaseUrl, realtimeBaseUrl],
     );
 
