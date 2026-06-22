@@ -4,3 +4,6 @@ node_modules
 claude.md
 docs/tasks
 .env*
+.codegraph
+build
+.agents
